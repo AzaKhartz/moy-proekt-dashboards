@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расходы на сервера Digital Ocean — новый и старый аккаунт (база ОПУ)</title>
+<style>
+  :root{
+    --bg:#0f172a;
+    --panel:#ffffff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --new:#2563eb;
+    --new-soft:#dbeafe;
+    --old:#f59e0b;
+    --old-soft:#fef3c7;
+    --reserve:#10b981;
+    --neutral:#94a3b8;
+    --refund:#0ea5e9;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:#f1f5f9;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 64px}
+
+  header.hero{
+    background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);
+    color:#fff;padding:44px 0 40px;
+  }
+  .hero .wrap{padding-bottom:0}
+  .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#93c5fd;font-weight:600;margin:0 0 10px}
+  h1{font-size:32px;line-height:1.2;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:#cbd5e1;font-size:15px;margin:0;max-width:700px}
+  .badges{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{display:inline-block;font-size:13px;color:#bfdbfe;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);padding:6px 12px;border-radius:999px}
+  .badge.hl{color:#fff;background:rgba(37,99,235,.45);border-color:rgba(147,197,253,.5);font-weight:600}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-28px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;
+    box-shadow:0 6px 24px rgba(15,23,42,.06)}
+  .kpi .label{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px}
+  .kpi .val{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0;font-variant-numeric:tabular-nums}
+  .kpi .note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  .kpi.accent-new{border-top:3px solid var(--new)}
+  .kpi.accent-old{border-top:3px solid var(--old)}
+  .kpi.accent-tot{border-top:3px solid var(--ink)}
+  .kpi.accent-share{border-top:3px solid var(--reserve)}
+
+  section{margin-top:44px}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;width:26px;height:26px;border-radius:8px;background:var(--bg);color:#fff;
+    font-size:13px;align-items:center;justify-content:center;font-weight:700;flex:none}
+  .lead{color:var(--muted);font-size:14.5px;margin:0 0 20px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;
+    box-shadow:0 4px 16px rgba(15,23,42,.04)}
+
+  .split{display:flex;height:54px;border-radius:12px;overflow:hidden;margin:8px 0 18px}
+  .split .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+  .split .seg.new{background:var(--new)}
+  .split .seg.old{background:var(--old)}
+  .legend{display:flex;gap:24px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+  .legend .it{display:flex;align-items:center;gap:8px}
+  .dot{width:12px;height:12px;border-radius:3px;flex:none}
+  .dot.new{background:var(--new)} .dot.old{background:var(--old)}
+  .dot.reserve{background:var(--reserve)} .dot.neutral{background:var(--neutral)}
+  .dot.refund{background:var(--refund)}
+
+  .chart{display:flex;align-items:flex-end;gap:14px;height:280px;padding:0 6px;border-bottom:2px solid var(--line);margin-top:8px}
+  .mo{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;min-width:0}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:240px}
+  .bar{width:20px;border-radius:5px 5px 0 0;position:relative;transition:.2s}
+  .bar.new{background:var(--new)} .bar.old{background:var(--old)}
+  .bar .tip{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10.5px;
+    color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .mo .mlabel{font-size:12.5px;color:var(--ink);font-weight:600;margin-top:10px}
+  .mo.partial .mlabel{color:var(--old)}
+  .mo.partial .bars{opacity:.75}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:right;padding:11px 14px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;border-bottom:2px solid var(--line)}
+  tbody tr:hover{background:#f8fafc}
+  .cat{display:flex;align-items:center;gap:9px;font-weight:600}
+  tr.total td{font-weight:700;border-top:2px solid var(--ink);border-bottom:none;font-size:14.5px}
+  td.pos{color:var(--reserve)}
+
+  .insights{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .ins{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+  .ins .h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;margin:0 0 8px}
+  .ins .ico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+  .ins p{margin:0;font-size:13.8px;color:#334155}
+  .ins.c1 .ico{background:var(--old-soft)} .ins.c2 .ico{background:var(--new-soft)}
+  .ins.c3 .ico{background:#d1fae5} .ins.c4 .ico{background:#fee2e2}
+
+  .note-box{background:#f8fafc;border:1px solid var(--line);border-left:4px solid var(--new);
+    border-radius:10px;padding:16px 18px;margin-top:16px;font-size:13.5px;color:#334155}
+  .note-box b{color:var(--ink)}
+
+  .foot{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+  .foot b{color:#475569}
+
+  @media (max-width:760px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .insights{grid-template-columns:1fr}
+    h1{font-size:25px}
+    .bar{width:14px}
+  }
+  @media print{
+    body{background:#fff}
+    .kpi,.card,.ins{box-shadow:none}
+    header.hero{background:#0f172a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .bar,.split .seg,.kpi{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    section{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Технические расходы · Digital Ocean · статья 653 «Сервера»</p>
+    <h1>Расходы на сервера: новый и старый аккаунт</h1>
+    <p class="sub">Вся картина по оплатам Digital Ocean в разрезе начисления: сколько расходов относится к новому аккаунту, сколько к старому, и как это меняется по месяцам.</p>
+    <div class="badges">
+      <span class="badge hl">База: ОПУ (начисление)</span>
+      <span class="badge">Период: январь — июнь 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="kpis">
+    <div class="kpi accent-new">
+      <p class="label">Новый аккаунт</p>
+      <p class="val">$147 555</p>
+      <p class="note">12 платежей · 86% аккаунтных расходов</p>
+    </div>
+    <div class="kpi accent-old">
+      <p class="label">Старый аккаунт</p>
+      <p class="val">$23 756</p>
+      <p class="note">14 платежей · 14%, затухающий хвост</p>
+    </div>
+    <div class="kpi accent-share">
+      <p class="label">Резерв + бэкапы</p>
+      <p class="val">$18 560</p>
+      <p class="note">холодные копии, ЦОД, бэкапы БД</p>
+    </div>
+    <div class="kpi accent-tot">
+      <p class="label">Всего за период</p>
+      <p class="val">$192 199</p>
+      <p class="note">≈ 14,87 млн ₽ по ОПУ</p>
+    </div>
+  </div>
+
+  <!-- 1. New vs Old -->
+  <section>
+    <h2><span class="num">1</span> Новый против старого аккаунта</h2>
+    <p class="lead">Идёт миграция со старого аккаунта на новый. Сегодня почти все деньги — на новом.</p>
+    <div class="card">
+      <div class="split">
+        <div class="seg new" style="width:86.1%">Новый — 86,1%</div>
+        <div class="seg old" style="width:13.9%">Старый — 13,9%</div>
+      </div>
+      <div class="legend">
+        <span class="it"><span class="dot new"></span> Новый аккаунт — $147 555 (основная текущая нагрузка)</span>
+        <span class="it"><span class="dot old"></span> Старый аккаунт — $23 756 (затухающий хвост)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Monthly OPU -->
+  <section>
+    <h2><span class="num">2</span> Динамика по месяцам начисления (ОПУ)</h2>
+    <p class="lead">Расход отнесён к месяцу, к которому он относится. Новый аккаунт — $27–33 тыс./мес. Старый стабильно сжимается: с $4 400 до $2 369.</p>
+    <div class="card">
+      <div class="chart">
+        <!-- высота столбца = % от 34 000 -->
+        <div class="mo">
+          <div class="bars">
+            <div class="bar new" style="height:98.0%"><span class="tip">33,3к</span></div>
+            <div class="bar old" style="height:12.9%"><span class="tip">4,4к</span></div>
+          </div>
+          <span class="mlabel">Янв</span>
+        </div>
+        <div class="mo">
+          <div class="bars">
+            <div class="bar new" style="height:87.6%"><span class="tip">29,8к</span></div>
+            <div class="bar old" style="height:12.9%"><span class="tip">4,4к</span></div>
+          </div>
+          <span class="mlabel">Фев</span>
+        </div>
+        <div class="mo">
+          <div class="bars">
+            <div class="bar new" style="height:91.7%"><span class="tip">31,2к</span></div>
+            <div class="bar old" style="height:12.9%"><span class="tip">4,4к</span></div>
+          </div>
+          <span class="mlabel">Мар</span>
+        </div>
+        <div class="mo">
+          <div class="bars">
+            <div class="bar new" style="height:78.7%"><span class="tip">26,8к</span></div>
+            <div class="bar old" style="height:12.5%"><span class="tip">4,2к</span></div>
+          </div>
+          <span class="mlabel">Апр</span>
+        </div>
+        <div class="mo">
+          <div class="bars">
+            <div class="bar new" style="height:77.9%"><span class="tip">26,5к</span></div>
+            <div class="bar old" style="height:11.6%"><span class="tip">3,9к</span></div>
+          </div>
+          <span class="mlabel">Май</span>
+        </div>
+        <div class="mo partial">
+          <div class="bars">
+            <div class="bar new" style="height:1%"></div>
+            <div class="bar old" style="height:7.0%"><span class="tip">2,4к</span></div>
+          </div>
+          <span class="mlabel">Июн*</span>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:18px">
+        <span class="it"><span class="dot new"></span> Новый аккаунт</span>
+        <span class="it"><span class="dot old"></span> Старый аккаунт</span>
+        <span class="it" style="margin-left:auto;color:#94a3b8">* июнь неполный: инвойсы по новому аккаунту начисляются в конце месяца</span>
+      </div>
+      <div class="note-box">
+        <b>Чем ОПУ отличается от ДДС (оплат).</b> 5 платежей относятся к другому месяцу, чем дата оплаты:
+        декабрьская оплата резерва ($2 500) начислена в январь; остаток за март ($2 216) перенесён в апрель;
+        доплаты по DO ($262 и $1 316) сдвинуты на месяц назад. Поэтому помесячная картина по ОПУ ровнее и точнее отражает реальную стоимость серверов в каждом месяце.
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Breakdown table (OPU) -->
+  <section>
+    <h2><span class="num">3</span> Полная разбивка (база ОПУ)</h2>
+    <p class="lead">Все начисления Digital Ocean за период по назначению. Рубли — по строке «Сумма ОПУ».</p>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Категория</th><th>Платежей</th><th>USD</th><th>₽ (ОПУ)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cat"><span class="dot new"></span>Новый аккаунт</span></td>
+            <td>12</td><td>147 555</td><td>−11 468 791</td>
+          </tr>
+          <tr>
+            <td><span class="cat"><span class="dot old"></span>Старый аккаунт</span></td>
+            <td>14</td><td>23 756</td><td>−1 874 468</td>
+          </tr>
+          <tr>
+            <td><span class="cat"><span class="dot reserve"></span>Резервные / холодные сервера</span></td>
+            <td>7</td><td>15 960</td><td>−1 265 211</td>
+          </tr>
+          <tr>
+            <td><span class="cat"><span class="dot neutral"></span>Бэкапы БД и ПБИ</span></td>
+            <td>1</td><td>2 600</td><td>−198 854</td>
+          </tr>
+          <tr>
+            <td><span class="cat"><span class="dot neutral"></span>Доплаты DO без указания аккаунта</span></td>
+            <td>3</td><td>1 578</td><td>−120 100</td>
+          </tr>
+          <tr>
+            <td><span class="cat"><span class="dot refund"></span>Возврат (заявка 003145)</span></td>
+            <td>1</td><td class="pos">+750</td><td class="pos">+60 990</td>
+          </tr>
+          <tr class="total">
+            <td>Всего</td><td>38</td><td>192 199</td><td>−14 866 432</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3b. Monthly RUB table -->
+  <section>
+    <h2><span class="num">4</span> Итог по месяцам начисления</h2>
+    <p class="lead">Полная стоимость серверов по месяцу ОПУ (все категории вместе).</p>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Месяц ОПУ</th><th>Новый, $</th><th>Старый, $</th><th>Резерв+проч., $</th><th>Итого, $</th><th>Итого, ₽</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Январь 2026</td><td>33 336</td><td>4 400</td><td>2 500</td><td>40 236</td><td>−3 118 072</td></tr>
+          <tr><td>Февраль 2026</td><td>29 800</td><td>4 400</td><td>3 380</td><td>37 580</td><td>−2 906 370</td></tr>
+          <tr><td>Март 2026</td><td>31 166</td><td>4 400</td><td>3 380</td><td>38 946</td><td>−3 152 300</td></tr>
+          <tr><td>Апрель 2026</td><td>26 770</td><td>4 244</td><td>4 362</td><td>35 376</td><td>−2 697 825</td></tr>
+          <tr><td>Май 2026</td><td>26 483</td><td>3 944</td><td>4 666</td><td>35 093</td><td>−2 616 324</td></tr>
+          <tr><td>Июнь 2026*</td><td>0</td><td>2 369</td><td>2 600</td><td>4 969</td><td>−375 540</td></tr>
+          <tr class="total"><td>Всего</td><td>147 555</td><td>23 756</td><td>20 888</td><td>192 199</td><td>−14 866 432</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">* июнь неполный. Колонка «Резерв+проч.» включает резервные сервера, бэкапы, доплаты без аккаунта и возврат.</p>
+    </div>
+  </section>
+
+  <!-- 5. Insights -->
+  <section>
+    <h2><span class="num">5</span> Что важно понять</h2>
+    <p class="lead">Главные выводы для управленческого взгляда.</p>
+    <div class="insights">
+      <div class="ins c1">
+        <p class="h"><span class="ico">📉</span> Старый аккаунт сворачивается</p>
+        <p>Хвост: стабильные ~$4 400/мес (Desend + ExWallet + Криптопроцессинг). К июню сжался до $2 369. Понятная цель — дожать к нулю и закрыть аккаунт.</p>
+      </div>
+      <div class="ins c2">
+        <p class="h"><span class="ico">🆕</span> Новый аккаунт — основная нагрузка</p>
+        <p>86% всех аккаунтных расходов и вся текущая инфраструктура — $27–33 тыс./мес. Именно здесь точка контроля затрат на сервера.</p>
+      </div>
+      <div class="ins c3">
+        <p class="h"><span class="ico">🗓️</span> Это взгляд по начислению (ОПУ)</p>
+        <p>Расход отнесён к «своему» месяцу, а не к дате оплаты. Это убирает скачки кассовых платежей и даёт чистую помесячную стоимость серверов для план-факта.</p>
+      </div>
+      <div class="ins c4">
+        <p class="h"><span class="ico">⚠️</span> $1 578 без разметки</p>
+        <p>3 платежа («доплата за DO») не отнесены ни к новому, ни к старому аккаунту. Стоит доразметить — иначе аналитика по аккаунтам неточна на ~1%.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">
+    Источник: учётная таблица, статья <b>653 TE «Сервера»</b> (Digital Ocean). Разрез — по колонке <b>«Месяц ОПУ»</b>, суммы в ₽ — по строке <b>«Сумма ОПУ»</b>.
+    Категории определены по комментариям к платежам. Резервные сервера (холодные копии БД, ПоверБи, УРС, ЦОД на железе вне РФ) — отдельная статья, не привязана к продакшн-аккаунтам.
+    Отчёт сформирован <b>16.06.2026</b>, июнь неполный.
+  </p>
+
+</div>
+</body>
+</html>
