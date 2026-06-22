@@ -1,0 +1,113 @@
+<title>Аналитика ОП — клиенты, июнь 2026</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--line:#2a3340;--txt:#e6edf3;
+    --muted:#8b97a7;--accent:#3b82f6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#22d3ee;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:26px;margin:0 0 4px}.sub{color:var(--muted);font-size:14px;margin-bottom:6px}
+  .assume{background:#1e2a3a;border:1px solid #2d4358;border-left:3px solid var(--amber);
+    padding:10px 14px;border-radius:8px;font-size:13px;color:#cdd9e5;margin:16px 0 28px}
+  h2{font-size:18px;margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .q{color:var(--accent);font-weight:700;margin-right:6px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .kpi .v{font-size:24px;font-weight:700}.kpi .l{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .kpi.green .v{color:var(--green)}.kpi.red .v{color:var(--red)}.kpi.cyan .v{color:var(--cyan)}.kpi.amber .v{color:var(--amber)}
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{background:var(--panel2);color:var(--muted);font-weight:600;position:sticky;top:0}
+  th:first-child,td:first-child{text-align:left}
+  td.email{text-align:left;font-family:'Consolas',monospace;font-size:12.5px}
+  tr:hover td{background:#1b2230}
+  .mgr{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11.5px;background:#243042;color:#a9c0e0}
+  .pos{color:var(--green)}.neg{color:var(--red)}
+  .bar{height:8px;border-radius:6px;background:var(--accent);display:inline-block;vertical-align:middle}
+  .barbg{display:inline-block;width:90px;background:#243042;border-radius:6px;margin-left:8px;vertical-align:middle}
+  .note{color:var(--muted);font-size:12.5px;margin-top:8px}
+  .pill-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .pill{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px}
+  .pill b{color:var(--cyan)}
+  .empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
+  .empty b{color:var(--green);font-size:16px}
+  .mgrgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .mcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .mcard h3{margin:0 0 10px;font-size:15px}
+  .mrow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--muted)}
+  .mrow b{color:var(--txt)}
+</style>
+<div class="wrap">
+  <h1>Аналитика ОП — клиенты, июнь 2026</h1>
+  <div class="sub">Источник: рабочая таблица клиентов. Менеджеры: Руслан, Alex, Авик, Влад. Период: апрель–июнь 2026. Сгенерировано: 2026-06-22.</div>
+  <div class="assume" style="border-left-color:#22c55e"><b>Публичная обезличенная версия.</b> Клиенты заменены на метки «Клиент NN» (контакты не раскрываются). Полная версия с email — локально у автора.</div><div class="assume"><b>Допущение прогноза.</b> Июнь покрыт за 22 из 30 дней,
+    поэтому <b>прогноз на конец июня = факт × 1.3636</b> (линейный run-rate).
+    Деньги — в валюте таблицы (у.е.). Клиент = email.</div>
+  <div class="kpis" id="kpis"></div>
+  <h2><span class="q">1.</span> Новые клиенты в июне</h2>
+  <div class="sub">Появились в июне, отсутствовали и в апреле, и в мае.</div>
+  <div class="pill-row" id="newpills"></div>
+  <div class="tbl-wrap" style="margin-top:14px"><table id="t_new"></table></div>
+  <h2><span class="q">2.</span> Переходы между менеджерами</h2>
+  <div id="switches"></div>
+  <h2><span class="q">3.</span> Деньги от новых клиентов</h2>
+  <div class="pill-row" id="moneypills"></div>
+  <div class="note">Новые клиенты — низкочековые: вклад в общую июньскую выручку минимален.</div>
+  <h2><span class="q">4.</span> Топ-10 лучших клиентов (по прогнозу на конец июня)</h2>
+  <div class="tbl-wrap"><table id="t_best"></table></div>
+  <h2><span class="q">5.</span> Топ-10 худших клиентов в июне (наибольшее падение vs май)</h2>
+  <div class="sub">«Худшие» = приносившие деньги в мае (≥100), у кого выручка сильнее всего сдувается к концу июня.</div>
+  <div class="tbl-wrap"><table id="t_worst"></table></div>
+  <h2>Срез по менеджерам (факт)</h2>
+  <div class="mgrgrid" id="mgrcards"></div>
+</div>
+<script>
+const DATA = {"meta": {"days_elapsed": 22, "days_in_month": 30, "fcast_mult": 1.3636, "total_clients": 246, "generated": "2026-06-22"}, "manager_totals": {"Руслан": {"апрель": 157441.67, "май": 194696.32, "июнь": 89628.43}, "Alex": {"апрель": 12950.87, "май": 12561.13, "июнь": 13953.27}, "Авик": {"апрель": 56917.28, "май": 72286.84, "июнь": 39374.58}, "Влад": {"апрель": 10579.88, "май": 10844.54, "июнь": 4855.97}}, "q1_new_count": 27, "q1_new_by_mgr": {"Авик": 11, "Alex": 7, "Влад": 5, "Руслан": 4}, "q1_new": [{"email": "Клиент 17", "apr": 0.0, "may": 0.0, "jun": 372.42, "jun_fcast": 507.85, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 18", "apr": 0.0, "may": 0.0, "jun": 211.83, "jun_fcast": 288.86, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 19", "apr": 0.0, "may": 0.0, "jun": 167.0, "jun_fcast": 227.73, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 20", "apr": 0.0, "may": 0.0, "jun": 145.95, "jun_fcast": 199.02, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 21", "apr": 0.0, "may": 0.0, "jun": 135.19, "jun_fcast": 184.35, "mgr_by_month": {"июнь": ["Влад"]}, "managers": ["Влад"], "mgr": "Влад"}, {"email": "Клиент 22", "apr": 0.0, "may": 0.0, "jun": 111.45, "jun_fcast": 151.98, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 23", "apr": 0.0, "may": 0.0, "jun": 108.19, "jun_fcast": 147.53, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 24", "apr": 0.0, "may": 0.0, "jun": 28.54, "jun_fcast": 38.92, "mgr_by_month": {"июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 25", "apr": 0.0, "may": 0.0, "jun": 27.44, "jun_fcast": 37.42, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 26", "apr": 0.0, "may": 0.0, "jun": 22.67, "jun_fcast": 30.91, "mgr_by_month": {"июнь": ["Влад"]}, "managers": ["Влад"], "mgr": "Влад"}, {"email": "Клиент 27", "apr": 0.0, "may": 0.0, "jun": 16.47, "jun_fcast": 22.46, "mgr_by_month": {"июнь": ["Влад"]}, "managers": ["Влад"], "mgr": "Влад"}, {"email": "Клиент 28", "apr": 0.0, "may": 0.0, "jun": 11.34, "jun_fcast": 15.46, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 29", "apr": 0.0, "may": 0.0, "jun": 10.0, "jun_fcast": 13.64, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 30", "apr": 0.0, "may": 0.0, "jun": 9.11, "jun_fcast": 12.42, "mgr_by_month": {"июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 31", "apr": 0.0, "may": 0.0, "jun": 7.21, "jun_fcast": 9.83, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 32", "apr": 0.0, "may": 0.0, "jun": 4.82, "jun_fcast": 6.57, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 33", "apr": 0.0, "may": 0.0, "jun": 2.01, "jun_fcast": 2.74, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 34", "apr": 0.0, "may": 0.0, "jun": 2.0, "jun_fcast": 2.73, "mgr_by_month": {"июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 35", "apr": 0.0, "may": 0.0, "jun": 1.78, "jun_fcast": 2.43, "mgr_by_month": {"июнь": ["Влад"]}, "managers": ["Влад"], "mgr": "Влад"}, {"email": "Клиент 36", "apr": 0.0, "may": 0.0, "jun": 1.14, "jun_fcast": 1.55, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 37", "apr": 0.0, "may": 0.0, "jun": 0.62, "jun_fcast": 0.85, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 38", "apr": 0.0, "may": 0.0, "jun": 0.2, "jun_fcast": 0.27, "mgr_by_month": {"июнь": ["Влад"]}, "managers": ["Влад"], "mgr": "Влад"}, {"email": "Клиент 39", "apr": 0.0, "may": 0.0, "jun": 0.13, "jun_fcast": 0.18, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 40", "apr": 0.0, "may": 0.0, "jun": 0.07, "jun_fcast": 0.1, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 41", "apr": 0.0, "may": 0.0, "jun": 0.03, "jun_fcast": 0.04, "mgr_by_month": {"июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 42", "apr": 0.0, "may": 0.0, "jun": 0.03, "jun_fcast": 0.04, "mgr_by_month": {"июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 43", "apr": 0.0, "may": 0.0, "jun": 0.01, "jun_fcast": 0.01, "mgr_by_month": {"июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}], "q2_switches": [], "q3_new_money_fact": 1397.65, "q3_new_money_fcast": 1905.89, "q4_top_best": [{"email": "Клиент 01", "apr": 47291.0, "may": 43841.55, "jun": 31231.0, "jun_fcast": 42587.73, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 02", "apr": 25518.0, "may": 31093.39, "jun": 14005.0, "jun_fcast": 19097.73, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 03", "apr": 1842.0, "may": 984.24, "jun": 6928.3, "jun_fcast": 9447.68, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 04", "apr": 3974.05, "may": 7005.86, "jun": 4913.34, "jun_fcast": 6700.01, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 05", "apr": 16734.0, "may": 19479.04, "jun": 4808.43, "jun_fcast": 6556.95, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 06", "apr": 0.0, "may": 512.56, "jun": 4788.39, "jun_fcast": 6529.62, "mgr_by_month": {"май": ["Alex"], "июнь": ["Alex"]}, "managers": ["Alex"], "mgr": "Alex"}, {"email": "Клиент 07", "apr": 16270.0, "may": 11965.2, "jun": 4585.0, "jun_fcast": 6252.27, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 08", "apr": 8308.0, "may": 8586.19, "jun": 3903.0, "jun_fcast": 5322.27, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "mgr": "Руслан"}, {"email": "Клиент 09", "apr": 0.0, "may": 2421.95, "jun": 3362.62, "jun_fcast": 4585.39, "mgr_by_month": {"май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}, {"email": "Клиент 10", "apr": 7257.32, "may": 5703.12, "jun": 3277.44, "jun_fcast": 4469.24, "mgr_by_month": {"апрель": ["Авик"], "май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "mgr": "Авик"}], "q5_top_worst": [{"email": "Клиент 14", "apr": 944.0, "may": 34743.83, "jun": 1275.0, "jun_fcast": 1738.64, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -33005.19, "pct": -95.0, "mgr": "Руслан"}, {"email": "Клиент 05", "apr": 16734.0, "may": 19479.04, "jun": 4808.43, "jun_fcast": 6556.95, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -12922.09, "pct": -66.3, "mgr": "Руслан"}, {"email": "Клиент 02", "apr": 25518.0, "may": 31093.39, "jun": 14005.0, "jun_fcast": 19097.73, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -11995.66, "pct": -38.6, "mgr": "Руслан"}, {"email": "Клиент 07", "apr": 16270.0, "may": 11965.2, "jun": 4585.0, "jun_fcast": 6252.27, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -5712.93, "pct": -47.7, "mgr": "Руслан"}, {"email": "Клиент 15", "apr": 4578.03, "may": 5654.73, "jun": 660.04, "jun_fcast": 900.05, "mgr_by_month": {"апрель": ["Авик"], "май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "delta": -4754.68, "pct": -84.1, "mgr": "Авик"}, {"email": "Клиент 13", "apr": 5549.85, "may": 5899.59, "jun": 1286.21, "jun_fcast": 1753.92, "mgr_by_month": {"апрель": ["Авик"], "май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "delta": -4145.67, "pct": -70.3, "mgr": "Авик"}, {"email": "Клиент 08", "apr": 8308.0, "may": 8586.19, "jun": 3903.0, "jun_fcast": 5322.27, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -3263.92, "pct": -38.0, "mgr": "Руслан"}, {"email": "Клиент 11", "apr": 5004.0, "may": 6748.44, "jun": 2881.0, "jun_fcast": 3928.64, "mgr_by_month": {"апрель": ["Руслан"], "май": ["Руслан"], "июнь": ["Руслан"]}, "managers": ["Руслан"], "delta": -2819.8, "pct": -41.8, "mgr": "Руслан"}, {"email": "Клиент 12", "apr": 6257.0, "may": 5285.99, "jun": 2115.03, "jun_fcast": 2884.13, "mgr_by_month": {"апрель": ["Авик"], "май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "delta": -2401.86, "pct": -45.4, "mgr": "Авик"}, {"email": "Клиент 16", "apr": 3795.98, "may": 2975.5, "jun": 467.26, "jun_fcast": 637.17, "mgr_by_month": {"апрель": ["Авик"], "май": ["Авик"], "июнь": ["Авик"]}, "managers": ["Авик"], "delta": -2338.33, "pct": -78.6, "mgr": "Авик"}]};
+const f0 = n => Math.round(n).toLocaleString('ru-RU');
+const f2 = n => (n).toLocaleString('ru-RU',{maximumFractionDigits:2});
+const mgr = m => `<span class="mgr">${m}</span>`;
+const T = {jun:0,may:0}; for(const v of Object.values(DATA.manager_totals)){T.jun+=v['июнь'];T.may+=v['май'];}
+T.jun_fcast = T.jun*DATA.meta.fcast_mult;
+const kpis=[
+ {v:DATA.q1_new_count,l:'новых клиентов в июне',c:'cyan'},
+ {v:f0(DATA.q3_new_money_fact)+' ('+f0(DATA.q3_new_money_fcast)+')',l:'денег от новых: факт (прогноз)',c:'green'},
+ {v:DATA.q2_switches.length,l:'переходов между менеджерами',c:DATA.q2_switches.length?'amber':'green'},
+ {v:f0(T.jun)+' ('+f0(T.jun_fcast)+')',l:'выручка июнь: факт (прогноз)',c:''},
+ {v:DATA.meta.total_clients,l:'уникальных клиентов всего',c:''},
+];
+document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k.c}"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('');
+document.getElementById('newpills').innerHTML=Object.entries(DATA.q1_new_by_mgr).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<div class="pill">${m}: <b>${n}</b></div>`).join('');
+let h='<tr><th>Клиент (email)</th><th>Менеджер</th><th>Июнь, факт</th><th>Прогноз июня</th></tr>';
+DATA.q1_new.forEach(c=>h+=`<tr><td class="email">${c.email}</td><td>${mgr(c.mgr)}</td><td>${f2(c.jun)}</td><td>${f2(c.jun_fcast)}</td></tr>`);
+document.getElementById('t_new').innerHTML=h;
+if(DATA.q2_switches.length===0){
+ document.getElementById('switches').innerHTML='<div class="empty"><b>0 переходов.</b><br>Ни один клиент (по email) не встречается в книге двух разных менеджеров за апрель–июнь.<div class="note" style="margin-top:8px">Определение — по совпадению email. Если клиент сменил и почту, такой переход данные не покажут.</div></div>';
+}else{
+ let s='<div class="tbl-wrap"><table><tr><th>Клиент</th><th>Маршрут</th><th>Апр</th><th>Май</th><th>Июн</th></tr>';
+ DATA.q2_switches.forEach(x=>s+=`<tr><td class="email">${x.email}</td><td style="text-align:left">${x.path.map(p=>p[0]+': '+p[1]).join(' → ')}</td><td>${f2(x.apr)}</td><td>${f2(x.may)}</td><td>${f2(x.jun)}</td></tr>`);
+ document.getElementById('switches').innerHTML=s+'</table></div>';
+}
+const share=T.jun?(DATA.q3_new_money_fact/T.jun*100):0;
+document.getElementById('moneypills').innerHTML=
+ `<div class="pill">Факт: <b>${f2(DATA.q3_new_money_fact)}</b></div>`+
+ `<div class="pill">Прогноз конца июня: <b>${f2(DATA.q3_new_money_fcast)}</b></div>`+
+ `<div class="pill">Доля в выручке июня: <b>${share.toFixed(2)}%</b></div>`+
+ `<div class="pill">Клиентов: <b>${DATA.q1_new_count}</b></div>`;
+const maxf=Math.max(...DATA.q4_top_best.map(c=>c.jun_fcast));
+let b='<tr><th>#</th><th>Клиент</th><th>Менеджер</th><th>Май</th><th>Июнь факт</th><th>Прогноз июня</th></tr>';
+DATA.q4_top_best.forEach((c,i)=>{const w=Math.max(2,Math.round(c.jun_fcast/maxf*90));
+ b+=`<tr><td>${i+1}</td><td class="email">${c.email}</td><td>${mgr(c.mgr)}</td><td>${f2(c.may)}</td><td>${f2(c.jun)}</td><td>${f2(c.jun_fcast)}<span class="barbg"><span class="bar" style="width:${w}px"></span></span></td></tr>`;});
+document.getElementById('t_best').innerHTML=b;
+let w='<tr><th>#</th><th>Клиент</th><th>Менеджер</th><th>Май</th><th>Прогноз июня</th><th>Δ к маю</th><th>%</th></tr>';
+DATA.q5_top_worst.forEach((c,i)=>w+=`<tr><td>${i+1}</td><td class="email">${c.email}</td><td>${mgr(c.mgr)}</td><td>${f2(c.may)}</td><td>${f2(c.jun_fcast)}</td><td class="neg">${f2(c.delta)}</td><td class="neg">${c.pct}%</td></tr>`);
+document.getElementById('t_worst').innerHTML=w;
+let mc='';
+for(const [m,v] of Object.entries(DATA.manager_totals)){const fc=v['июнь']*DATA.meta.fcast_mult,dlt=fc-v['май'],cls=dlt>=0?'pos':'neg';
+ mc+=`<div class="mcard"><h3>${m}</h3>
+  <div class="mrow"><span>Апрель</span><b>${f0(v['апрель'])}</b></div>
+  <div class="mrow"><span>Май</span><b>${f0(v['май'])}</b></div>
+  <div class="mrow"><span>Июнь (факт)</span><b>${f0(v['июнь'])}</b></div>
+  <div class="mrow"><span>Прогноз июня</span><b>${f0(fc)}</b></div>
+  <div class="mrow"><span>Δ прогноз к маю</span><b class="${cls}">${dlt>=0?'+':''}${f0(dlt)}</b></div></div>`;}
+document.getElementById('mgrcards').innerHTML=mc;
+</script>
