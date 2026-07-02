@@ -243,26 +243,69 @@
   </section>
 
   <section>
-    <h2><span class="num">5</span> Выводы</h2>
+    <h2><span class="num">5</span> Кто жжёт газ — низкомаржинальный сегмент</h2>
+    <p class="lead">Операционный перерасход — не абстракция, а конкретный сегмент клиентов. Сверка убыточных контрагентов (нетто-маржа за полугодие ниже нуля) с их газовой нагрузкой.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <tbody>
+          <tr><td>Убыточных контрагентов (нетто-маржа &lt; 0 за полгода)</td><td><b>82</b></td></tr>
+          <tr><td>Их доля в транзакциях бизнеса (из ~732 500)</td><td class="hi">~11% · ≈80 400 шт.</td></tr>
+          <tr><td>Их суммарная нетто-маржа за полгода</td><td class="hi">−9 073 USDT</td></tr>
+          <tr><td>Газ, сожжённый на них</td><td class="hi">~74 000 TRX ≈ 23 700 USDT</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-box"><b>Каждая 9-я транзакция бизнеса идёт от клиента, не окупившего собственный газ.</b> Бизнес тратит ~23,7 тыс. USDT на газ, чтобы обслужить сегмент, вернувший −9 тыс. USDT нетто. Сегмент сконцентрирован у двух менеджеров и у горстки крупных по обороту клиентов.</div>
+    <div style="margin-top:16px">
+      <b style="font-size:14px">Топ-5 сегмента по обороту (обезличено):</b>
+      <div style="display:grid;gap:8px;margin-top:10px">
+        <div style="display:flex;justify-content:space-between;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px"><span style="font-weight:600">Клиент 01</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">~24 000 транзакций</span></div>
+        <div style="display:flex;justify-content:space-between;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px"><span style="font-weight:600">Клиент 02</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">~12 000 транзакций</span></div>
+        <div style="display:flex;justify-content:space-between;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px"><span style="font-weight:600">Клиент 03</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">~7 000 транзакций</span></div>
+        <div style="display:flex;justify-content:space-between;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px"><span style="font-weight:600">Клиент 04</span><span style="color:var(--muted)">меньший объём</span></div>
+        <div style="display:flex;justify-content:space-between;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px"><span style="font-weight:600">Клиент 05</span><span style="color:var(--muted)">меньший объём</span></div>
+      </div>
+    </div>
+    <div class="note-box">По периодам: основной минус — в Q1 (янв–мар); в Q2 (апр–июн) сегмент валово в плюсе, но помесячно сползает вниз (−35%…−88%). Их «починили» к весне, и они снова едут в минус — газовая нагрузка вернётся, если не тронуть тариф.</div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span> Выводы</h2>
     <div class="insights">
       <div class="ins c1"><div class="h"><span class="ico">📈</span> Газ обгоняет маржу системно</div><p>За полугодие газ в USDT вырос в 1,7 раза быстрее маржи (+146% против +85%). Доля газа в марже поднялась с 17% до 22-25%.</p></div>
       <div class="ins c2"><div class="h"><span class="ico">🎢</span> Курс TRX — качель</div><p>В мае курс добавил +18% к расходу, в июне снял −8%. Сигналы «расходы взлетели / расходы упали» на 60-70% создаёт курс, а не операции.</p></div>
       <div class="ins c3"><div class="h"><span class="ico">🧱</span> Проблема на плато, не в разгоне</div><p>Курс-нейтральная доля газа выросла 16% → 21% в январе-апреле и с апреля стоит на месте. Сдвиг разовый, весенний, а не ускоряющийся.</p></div>
-      <div class="ins c4"><div class="h"><span class="ico">🔧</span> Экономика транзакции просела</div><p>Газ на транзакцию вырос, маржа на транзакцию упала. Это управляемая часть — зона для оптимизации.</p></div>
+      <div class="ins c4"><div class="h"><span class="ico">🎯</span> 11% транзакций — в минус</div><p>82 клиента не окупают собственный газ: −9 тыс. USDT нетто при 23,7 тыс. USDT газа на них. Это вопрос тарифа, а не сети.</p></div>
     </div>
   </section>
 
   <section>
-    <h2><span class="num">6</span> Что предлагаю</h2>
+    <h2><span class="num">7</span> Что делать — три слоя</h2>
+    <p class="lead">Перерасход газа — это две проблемы сразу: техническая (как платим за сеть) и коммерческая (кому продаём в минус). Технология делает убыток дешевле, но плюсовым его делает только тариф.</p>
+
+    <h3 style="font-size:15px;font-weight:700;margin:24px 0 10px;color:#1e293b;display:flex;align-items:center;gap:9px"><span style="width:9px;height:9px;border-radius:2px;background:var(--fx);display:inline-block"></span>Слой A · Снять курсовую качель</h3>
     <div class="recs">
-      <div class="rec"><div class="t"><b>Разделить учёт газа на TRX и USDT</b> и вывести курсовую разницу отдельной строкой. Иначе и рост (май), и «улучшение» (июнь) читаются неверно.</div></div>
-      <div class="rec"><div class="t"><b>Снять курсовой риск через GasFree</b> — режим TRON, где комиссия списывается сразу в USDT (~1-1,5 USDT за перевод). Расход станет предсказуемым и перестанет зависеть от курса.</div></div>
-      <div class="rec"><div class="t"><b>Заняться операционным газом:</b> проверить долю переводов на «пустые» кошельки (они вдвое дороже по энергии), группировку транзакций (батчинг), стейкинг вместо разовой аренды.</div></div>
-      <div class="rec"><div class="t"><b>Чинить сейчас, пока курс TRX низкий.</b> Июньское падение курса дало передышку. Если курс развернётся вверх, как в мае, он снова вскроет растущий газ — и удар по марже будет жёстче.</div></div>
+      <div class="rec"><div class="t"><b>Оплата комиссии в USDT (GasFree).</b> Фикс ~1 USDT за перевод, TRX на балансе не нужен — расход детерминирован в долларах, качель ±18% исчезает. При дешёвом TRX аренда бывает выгоднее — считать порог.</div></div>
+      <div class="rec"><div class="t"><b>Разделить в учёте курс и потребление,</b> вывести курсовую разницу отдельной строкой. Следить за курс-независимыми метриками (газ/tx в TRX, маржа/tx).</div></div>
     </div>
+
+    <h3 style="font-size:15px;font-weight:700;margin:24px 0 10px;color:#1e293b;display:flex;align-items:center;gap:9px"><span style="width:9px;height:9px;border-radius:2px;background:var(--margin);display:inline-block"></span>Слой B · Срезать операционный газ</h3>
+    <div class="recs">
+      <div class="rec"><div class="t"><b>Аренда энергии вместо сжигания TRX</b> — около −60% на перевод (~2,9 против ~13,9 TRX). Проверить, что на пиках не уходим в сжигание.</div></div>
+      <div class="rec"><div class="t"><b>Убрать двойной расход на новые/пустые кошельки</b> — первый перевод на новый адрес вдвое дороже по энергии. Батчинг, консолидация, проверка активности получателя.</div></div>
+      <div class="rec"><div class="t"><b>Посчитать порог «стейкинг vs аренда»</b> на нашем объёме (~120–150 тыс. транзакций/мес) — найти точку перелома.</div></div>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:700;margin:24px 0 10px;color:#1e293b;display:flex;align-items:center;gap:9px"><span style="width:9px;height:9px;border-radius:2px;background:var(--ok);display:inline-block"></span>Слой C · Корень: репрайс низкомаржинальных</h3>
+    <div class="recs">
+      <div class="rec"><div class="t"><b>Gas pass-through / минимальная маржа на транзакцию</b> для высокочастотных клиентов. 11% транзакций, не окупающих газ — это тариф, а не сеть.</div></div>
+      <div class="rec"><div class="t"><b>Адресно по топ-5 сегмента:</b> пересмотреть тариф — тем более что в Q2 они снова сползают в минус. Эти клиенты дают непропорциональный газ, адресная работа окупится быстрее общей.</div></div>
+    </div>
+
+    <div class="note-box"><b>Приоритет по дешевизне выигрыша:</b> (1) аудит «новые адреса» + батчинг — дни; (2) GasFree / комиссия в USDT — снимает курс; (3) расчёт «стейк vs аренда»; (4) репрайс топ-5 — единственное, что превращает убыточные 11% в плюс. Слои A-B уменьшают <b>стоимость</b> газа, слой C чинит <b>причину</b>.</div>
   </section>
 
-  <div class="anon">🔒 <b>Данные обезличены.</b> В отчёте только агрегированные помесячные показатели (маржа, оборот, газ, курс). Имена, контакты и разбивка по клиентам не раскрываются.</div>
+  <div class="anon">🔒 <b>Данные обезличены.</b> Клиенты в сегментном разрезе заменены на метки «Клиент NN» по обороту; имена, контакты (email) и имена сотрудников не раскрываются. Финансовые показатели — агрегаты.</div>
 
   <div class="note-box"><b>Оговорки по данным.</b> Июнь — прогнозные данные, не факт. Курс TRX явно задан в таблице только за апрель и май; за остальные месяцы (включая июнь ≈ 0,325) выведен из отношения «газ в USDT ÷ газ в TRX». Вывод о курсовом эффекте июня опирается на заложенный в прогноз курс. «Газ» здесь — аренда Energy/Bandwidth в сети TRON, оплачиваемая в TRX.</div>
 
