@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расходы на газ TRON vs маржа — разбор для руководства (янв–июнь 2026)</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --gas:#ef4444; --gas-soft:#fee2e2;
+    --margin:#2563eb; --margin-soft:#dbeafe;
+    --fx:#f59e0b; --fx-soft:#fef3c7;
+    --ok:#10b981; --ok-soft:#d1fae5;
+    --neutral:#94a3b8;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);background:#f1f5f9;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 64px}
+
+  header.hero{background:linear-gradient(135deg,#0f172a 0%,#7f1d1d 100%);color:#fff;padding:44px 0 40px}
+  .hero .wrap{padding-bottom:0}
+  .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fca5a5;font-weight:600;margin:0 0 10px}
+  h1{font-size:31px;line-height:1.2;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:#e2e8f0;font-size:15px;margin:0;max-width:720px}
+  .badges{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{display:inline-block;font-size:13px;color:#fecaca;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);padding:6px 12px;border-radius:999px}
+  .badge.hl{color:#fff;background:rgba(239,68,68,.4);border-color:rgba(252,165,165,.5);font-weight:600}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-28px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 6px 24px rgba(15,23,42,.06)}
+  .kpi .label{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px}
+  .kpi .val{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0;font-variant-numeric:tabular-nums}
+  .kpi .note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  .kpi.a-margin{border-top:3px solid var(--margin)}
+  .kpi.a-gas{border-top:3px solid var(--gas)}
+  .kpi.a-share{border-top:3px solid var(--fx)}
+  .kpi.a-fx{border-top:3px solid var(--ink)}
+
+  section{margin-top:44px}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;width:26px;height:26px;border-radius:8px;background:var(--bg);color:#fff;font-size:13px;align-items:center;justify-content:center;font-weight:700;flex:none}
+  .lead{color:var(--muted);font-size:14.5px;margin:0 0 20px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+
+  .legend{display:flex;gap:24px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin-top:6px}
+  .legend .it{display:flex;align-items:center;gap:8px}
+  .dot{width:12px;height:12px;border-radius:3px;flex:none}
+  .dot.fact{background:var(--gas)} .dot.neu{background:var(--neutral)}
+
+  /* grouped bar chart */
+  .chart{display:flex;align-items:flex-end;gap:14px;height:270px;padding:0 6px;border-bottom:2px solid var(--line);margin-top:14px}
+  .mo{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;min-width:0}
+  .bars{display:flex;align-items:flex-end;gap:6px;height:230px}
+  .bar{width:26px;border-radius:5px 5px 0 0;position:relative;transition:.2s}
+  .bar.fact{background:var(--gas)} .bar.neu{background:var(--neutral)}
+  .bar .tip{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+  .mo .mlabel{font-size:12.5px;color:var(--ink);font-weight:600;margin-top:10px}
+  .mo.fcast .mlabel::after{content:" •";color:var(--fx)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;border-bottom:2px solid var(--line)}
+  tbody tr:hover{background:#f8fafc}
+  tr.fc td{color:#334155}
+  tr.fc td:first-child::after{content:" (прогноз)";color:var(--fx);font-size:11px;font-weight:600}
+  td.hi{color:var(--gas);font-weight:700}
+  .tbl-scroll{overflow-x:auto}
+
+  /* decomposition */
+  .decomp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  .dc{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px}
+  .dc.may{border-left:4px solid var(--gas)} .dc.jun{border-left:4px solid var(--ok)}
+  .dc h4{margin:0 0 4px;font-size:15px}
+  .dc .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .factor{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .factor:last-of-type{border-bottom:none}
+  .factor .v{font-weight:700;font-variant-numeric:tabular-nums}
+  .v.up{color:var(--gas)} .v.dn{color:var(--ok)} .v.tot{color:var(--ink)}
+  .formula{margin-top:12px;font-size:12.5px;color:#334155;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-variant-numeric:tabular-nums}
+
+  .insights{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .ins{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+  .ins .h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;margin:0 0 8px}
+  .ins .ico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+  .ins p{margin:0;font-size:13.8px;color:#334155}
+  .ins.c1 .ico{background:var(--gas-soft)} .ins.c2 .ico{background:var(--fx-soft)}
+  .ins.c3 .ico{background:var(--ok-soft)} .ins.c4 .ico{background:var(--margin-soft)}
+
+  .recs{counter-reset:r;display:grid;gap:12px;margin-top:6px}
+  .rec{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 3px 12px rgba(15,23,42,.03)}
+  .rec::before{counter-increment:r;content:counter(r);flex:none;width:28px;height:28px;border-radius:8px;background:var(--ok);color:#fff;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+  .rec .t{font-size:14px;color:#1e293b}
+  .rec .t b{color:var(--ink)}
+
+  .note-box{background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--fx);border-radius:10px;padding:16px 18px;margin-top:16px;font-size:13.3px;color:#334155}
+  .note-box b{color:var(--ink)}
+  .anon{background:var(--ok-soft);border:1px solid #a7f3d0;border-left:4px solid var(--ok);border-radius:10px;padding:12px 16px;margin-top:18px;font-size:13px;color:#065f46}
+
+  .foot{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+  .foot b{color:#475569}
+
+  @media (max-width:760px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .insights,.decomp{grid-template-columns:1fr}
+    h1{font-size:24px}
+    .bar{width:16px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Финансовый разбор · Тех. расходы</p>
+    <h1>Почему расходы на «газ» растут быстрее маржи</h1>
+    <p class="sub">Аренда Energy в сети TRON для переводов USDT-TRC20 против маржи. Период январь–июнь 2026. Проверка гипотезы о курсовой разнице TRX.</p>
+    <div class="badges">
+      <span class="badge hl">Газ обгоняет маржу в 1,7×</span>
+      <span class="badge">Янв–Июнь 2026</span>
+      <span class="badge">Июнь — прогноз</span>
+      <span class="badge">Данные обезличены</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="kpis">
+    <div class="kpi a-margin">
+      <p class="label">Маржа за полугодие</p>
+      <p class="val">+85%</p>
+      <p class="note">126,6 → 234,3 тыс. USDT</p>
+    </div>
+    <div class="kpi a-gas">
+      <p class="label">Газ (в USDT)</p>
+      <p class="val">+146%</p>
+      <p class="note">21,7 → 53,4 тыс. USDT</p>
+    </div>
+    <div class="kpi a-share">
+      <p class="label">Доля газа в марже</p>
+      <p class="val">17% → 23%</p>
+      <p class="note">пик 25% в мае</p>
+    </div>
+    <div class="kpi a-fx">
+      <p class="label">Курсовой эффект (май)</p>
+      <p class="val">+18%</p>
+      <p class="note">к расходу на газ от роста TRX</p>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="num">1</span> Суть проблемы</h2>
+    <p class="lead">За полугодие маржа выросла на 85%, а расходы на газ в долларах — на 146%. Газ растёт почти вдвое быстрее маржи, и его доля в марже увеличивается.</p>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <b style="font-size:15px">Доля газа в марже по месяцам</b>
+        <span style="font-size:12.5px;color:var(--muted)">чем выше столбец — тем большую часть маржи съедает газ</span>
+      </div>
+      <div class="legend">
+        <span class="it"><span class="dot fact"></span> Факт (в USDT, с учётом курса TRX)</span>
+        <span class="it"><span class="dot neu"></span> Курс-нейтрально (газ при фикс. курсе 0,30)</span>
+      </div>
+      <div class="chart">
+        <div class="mo"><div class="bars"><div class="bar fact" style="height:145px"><span class="tip">17,1%</span></div><div class="bar neu" style="height:136px"></div></div><div class="mlabel">Янв</div></div>
+        <div class="mo"><div class="bars"><div class="bar fact" style="height:149px"><span class="tip">17,5%</span></div><div class="bar neu" style="height:141px"></div></div><div class="mlabel">Фев</div></div>
+        <div class="mo"><div class="bars"><div class="bar fact" style="height:151px"><span class="tip">17,8%</span></div><div class="bar neu" style="height:152px"></div></div><div class="mlabel">Мар</div></div>
+        <div class="mo"><div class="bars"><div class="bar fact" style="height:174px"><span class="tip">20,5%</span></div><div class="bar neu" style="height:174px"></div></div><div class="mlabel">Апр</div></div>
+        <div class="mo"><div class="bars"><div class="bar fact" style="height:213px"><span class="tip">25,1%</span></div><div class="bar neu" style="height:181px"></div></div><div class="mlabel">Май</div></div>
+        <div class="mo fcast"><div class="bars"><div class="bar fact" style="height:194px"><span class="tip">22,8%</span></div><div class="bar neu" style="height:179px"></div></div><div class="mlabel">Июн</div></div>
+      </div>
+      <div class="note-box">Красные столбцы (факт) в мае резко выше, а в июне падают — но серые (курс-нейтральные) с апреля стоят на месте (~21%). Значит майский скачок и июньский откат — это <b>колебания курса TRX</b>, а не реальное изменение эффективности.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span> Полные цифры по месяцам</h2>
+    <div class="card tbl-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Месяц</th><th>Маржа, USDT</th><th>Газ, TRX</th><th>Газ, USDT</th>
+            <th>Курс TRX</th><th>Газ / Маржа</th><th>Транзакций</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Январь</td><td>126 583</td><td>67 720</td><td>21 670</td><td>~0,320</td><td>17,1%</td><td>76 997</td></tr>
+          <tr><td>Февраль</td><td>130 940</td><td>72 450</td><td>22 875</td><td>~0,316</td><td>17,5%</td><td>83 779</td></tr>
+          <tr><td>Март</td><td>158 499</td><td>94 635</td><td>28 292</td><td>~0,299</td><td>17,8%</td><td>117 685</td></tr>
+          <tr><td>Апрель</td><td>191 384</td><td>130 757</td><td>39 189</td><td>0,2997</td><td>20,5%</td><td>136 340</td></tr>
+          <tr><td>Май</td><td>201 054</td><td>142 558</td><td>50 400</td><td>0,3535</td><td class="hi">25,1%</td><td>149 330</td></tr>
+          <tr class="fc"><td>Июнь</td><td>234 337</td><td>164 370</td><td>53 378</td><td>~0,325</td><td>22,8%</td><td>168 401</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:14px">Темпы месяц-к-месяцу за последние два месяца: <b>май</b> — маржа +5,1%, газ в USDT +28,6%; <b>июнь</b> — маржа +16,6%, газ в USDT +5,9%. Именно эти два месяца объясняют всю историю.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span> Курс TRX — качель в обе стороны</h2>
+    <p class="lead">Газ мы платим в TRX, а учитываем в USDT. Одна и та же трата в TRX превращается в разные суммы в долларах в зависимости от курса. Разложим рост расхода на два фактора: реальное потребление (TRX) и курс.</p>
+    <div class="decomp">
+      <div class="dc may">
+        <h4>Май — курс раздул расход</h4>
+        <p class="cap">Рост газа в USDT за месяц: +28,6%</p>
+        <div class="factor"><span>Реальное потребление (в TRX)</span><span class="v up">+9,0%</span></div>
+        <div class="factor"><span>Рост курса TRX</span><span class="v up">+17,9%</span></div>
+        <div class="factor"><span>Итого в USDT</span><span class="v tot">+28,6%</span></div>
+        <div class="formula">1,090 × 1,179 = 1,285 → +28,5% ✓</div>
+      </div>
+      <div class="dc jun">
+        <h4>Июнь — курс скрыл расход</h4>
+        <p class="cap">Рост газа в USDT за месяц: +5,9%</p>
+        <div class="factor"><span>Реальное потребление (в TRX)</span><span class="v up">+15,3%</span></div>
+        <div class="factor"><span>Падение курса TRX</span><span class="v dn">−8,1%</span></div>
+        <div class="factor"><span>Итого в USDT</span><span class="v tot">+5,9%</span></div>
+        <div class="formula">1,153 × 0,919 = 1,059 → +5,9% ✓</div>
+      </div>
+    </div>
+    <div class="note-box"><b>Гипотеза о курсовой разнице подтверждается — и работает в обе стороны.</b> В мае курс добавил +18% к расходу поверх реального роста. В июне курс упал на 8% и <b>замаскировал</b> реальный рост потребления на 15%. Июньская «передышка» — это везение курса, а не экономия.</div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span> Что скрыто под курсовым шумом</h2>
+    <p class="lead">Если убрать влияние курса, видно два неприятных, но управляемых сдвига — оба произошли весной и с тех пор держатся на новом уровне (не разгоняются).</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>Показатель</th><th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Газ на транзакцию, TRX</td><td>0,88</td><td>0,86</td><td>0,80</td><td>0,96</td><td>0,95</td><td>0,98</td></tr>
+          <tr><td>Маржа на транзакцию, USDT</td><td>1,64</td><td>1,56</td><td>1,35</td><td>1,40</td><td>1,35</td><td>1,39</td></tr>
+          <tr><td>Газ / Маржа при фикс. курсе 0,30</td><td>16,0%</td><td>16,6%</td><td>17,9%</td><td>20,5%</td><td>21,3%</td><td>21,0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-box">Каждая транзакция стала <b>дороже по газу</b> (0,88 → 0,98 TRX) и <b>беднее по марже</b> (1,64 → 1,39 USDT), чем в январе. Сдвиг случился ступенькой около марта-апреля и вышел на плато. Это не про курс — это операционная экономика транзакции, и её можно чинить.</div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span> Выводы</h2>
+    <div class="insights">
+      <div class="ins c1"><div class="h"><span class="ico">📈</span> Газ обгоняет маржу системно</div><p>За полугодие газ в USDT вырос в 1,7 раза быстрее маржи (+146% против +85%). Доля газа в марже поднялась с 17% до 22-25%.</p></div>
+      <div class="ins c2"><div class="h"><span class="ico">🎢</span> Курс TRX — качель</div><p>В мае курс добавил +18% к расходу, в июне снял −8%. Сигналы «расходы взлетели / расходы упали» на 60-70% создаёт курс, а не операции.</p></div>
+      <div class="ins c3"><div class="h"><span class="ico">🧱</span> Проблема на плато, не в разгоне</div><p>Курс-нейтральная доля газа выросла 16% → 21% в январе-апреле и с апреля стоит на месте. Сдвиг разовый, весенний, а не ускоряющийся.</p></div>
+      <div class="ins c4"><div class="h"><span class="ico">🔧</span> Экономика транзакции просела</div><p>Газ на транзакцию вырос, маржа на транзакцию упала. Это управляемая часть — зона для оптимизации.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span> Что предлагаю</h2>
+    <div class="recs">
+      <div class="rec"><div class="t"><b>Разделить учёт газа на TRX и USDT</b> и вывести курсовую разницу отдельной строкой. Иначе и рост (май), и «улучшение» (июнь) читаются неверно.</div></div>
+      <div class="rec"><div class="t"><b>Снять курсовой риск через GasFree</b> — режим TRON, где комиссия списывается сразу в USDT (~1-1,5 USDT за перевод). Расход станет предсказуемым и перестанет зависеть от курса.</div></div>
+      <div class="rec"><div class="t"><b>Заняться операционным газом:</b> проверить долю переводов на «пустые» кошельки (они вдвое дороже по энергии), группировку транзакций (батчинг), стейкинг вместо разовой аренды.</div></div>
+      <div class="rec"><div class="t"><b>Чинить сейчас, пока курс TRX низкий.</b> Июньское падение курса дало передышку. Если курс развернётся вверх, как в мае, он снова вскроет растущий газ — и удар по марже будет жёстче.</div></div>
+    </div>
+  </section>
+
+  <div class="anon">🔒 <b>Данные обезличены.</b> В отчёте только агрегированные помесячные показатели (маржа, оборот, газ, курс). Имена, контакты и разбивка по клиентам не раскрываются.</div>
+
+  <div class="note-box"><b>Оговорки по данным.</b> Июнь — прогнозные данные, не факт. Курс TRX явно задан в таблице только за апрель и май; за остальные месяцы (включая июнь ≈ 0,325) выведен из отношения «газ в USDT ÷ газ в TRX». Вывод о курсовом эффекте июня опирается на заложенный в прогноз курс. «Газ» здесь — аренда Energy/Bandwidth в сети TRON, оплачиваемая в TRX.</div>
+
+  <div class="foot">
+    Источник: внутренняя управленческая таблица (агрегаты янв–июнь 2026). Подготовлено для демонстрации руководству. <b>Внутренний финансовый материал.</b>
+  </div>
+
+</div>
+</body>
+</html>
